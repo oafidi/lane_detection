@@ -102,6 +102,5 @@ def edge_thresholding(image: np.ndarray, high_th: int, low_th: int) -> np.ndarra
     orientation = gradient_orientation(dx, dy)
     nms = non_max_suppression(mag=magnitude, ang=orientation)
     thresholded = threshold(nms, high_th, low_th)
-
     return hysteresis_vectorized(thresholded)
 
