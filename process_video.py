@@ -1,10 +1,11 @@
-from gray_scale import gray_scale
+from gray_scale import gray_scale, region_of_interst
 from guassian_blur import guassian_blur, create_guassian_kernel
 from edge_detection import edge_thresholding
+from hough_transform import hough_transform, draw_lines
 import cv2
 import sys
 
-cap = cv2.VideoCapture(filename="dataset/the_road.mp4")
+cap = cv2.VideoCapture(filename="dataset/the_road_2.mp4")
 
 if not cap.isOpened():
     print("Error: Could not open video file.", file=sys.stderr)
@@ -28,8 +29,10 @@ while True:
     blurred_frame = guassian_blur(gray_frame, kernel=kernel)
 
     edges = edge_thresholding(blurred_frame, high_th=150, low_th=75)
-
-    cv2.imshow("Edges", edges)
+    region, mask = region_of_interst(edges)
+    lines = hough_transform(region, 200)
+    frame = draw_lines(frame, lines, mask, [0, 255, 0], 12)
+    cv2.imshow("Edges", frame)
     if (cv2.waitKey(1) == ord('q')):
         break
 

@@ -1,12 +1,6 @@
 import numpy as np
 import cv2
 
-image = cv2.imread("dataset/edges.png")
-image_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-_, edges = cv2.threshold(image_gray, 127, 255, cv2.THRESH_BINARY)
-cv2.imshow("Edges", edges)
-cv2.waitKey(0)
-
 def polar2cartesian(rho: float, theta: float) -> np.ndarray:
     return rho * np.array([np.sin(theta), np.cos(theta)])
 
@@ -32,15 +26,30 @@ def hough_transform(edges: np.ndarray, threshold: int):
     rhos_indexes, thetas_indexes = np.where(accumulator > threshold)
     return np.vstack([rhos[rhos_indexes], thetas[thetas_indexes]]).T
 
-def draw_lines(img: np.ndarray, lines: np.ndarray, thickness: int):
+def draw_lines(img: np.ndarray, lines: np.ndarray, mask:np.ndarray, color: list[int], thickness: int):
     empty_image = np.zeros(img.shape[:2])
+    new_img = img.copy()
 
     for rho, theta in lines:
         normal = polar2cartesian(rho, theta)
         direction = np.array([normal[1], -normal[0]])
-        p1 = normal + 1000 * direction
-        p2 = normal - 1000 * direction
+        p1 = np.round(normal + 1000 * direction).astype(int)
+        p2 = np.round(normal - 1000 * direction).astype(int)
         empty_image = cv2.line(img=empty_image, pt1=p1, pt2=p2, color=255, thickness=thickness)
     
-    
-print(hough_transform(edges, 360))
+    # min_diff = np.inf
+    # vanishing_point_line = 0
+    mask_lines = empty_image > 0
+    # for i in range(mask_lines.shape[0]):
+    #     line = mask_lines[i]
+    #     indexes = np.argwhere(line)
+    #     if (len(indexes) and indexes[-1] - indexes[0] < min_diff):
+    #         min_diff = indexes[-1] - indexes[0]
+    #         vanishing_point_line = i
+    # mask_boundaries = np.zeros_like(empty_image)
+    # mask_boundaries[vanishing_point_line:] = 1
+    mask = (mask * mask_lines).astype(bool)
+    new_img[mask] = np.array(color)
+
+    return new_img
+
