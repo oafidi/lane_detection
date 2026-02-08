@@ -22,7 +22,7 @@ frame_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
 frame_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
 fourcc = cv2.VideoWriter_fourcc(*"mp4v")
-out = cv2.VideoWriter("output/"+os.path.basename(filname), fourcc, 30.0, (700, 500))
+out = cv2.VideoWriter("output/"+os.path.basename(filename), fourcc, 30.0, (700, 500))
 
 print(f"frame count: {frame_count}  fps: {fps}")
 
