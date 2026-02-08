@@ -5,7 +5,7 @@ from hough_transform import hough_transform, draw_lines
 import cv2
 import sys
 
-cap = cv2.VideoCapture(filename="dataset/the_road_2.mp4")
+cap = cv2.VideoCapture(filename="dataset/the_road.mp4")
 
 if not cap.isOpened():
     print("Error: Could not open video file.", file=sys.stderr)
@@ -28,11 +28,12 @@ while True:
     gray_frame = gray_scale(frame)
     blurred_frame = guassian_blur(gray_frame, kernel=kernel)
 
-    edges = edge_thresholding(blurred_frame, high_th=150, low_th=75)
+    edges = edge_thresholding(blurred_frame, high_th=100, low_th=75)
     region, mask = region_of_interst(edges)
-    lines = hough_transform(region, 200)
-    frame = draw_lines(frame, lines, mask, [0, 255, 0], 12)
-    cv2.imshow("Edges", frame)
+    lines = hough_transform(region, 180)
+    frame = draw_lines(region, lines, mask, 255, 3)
+    cv2.imshow("Lines", frame)
+    cv2.imshow("Edge", region)
     if (cv2.waitKey(1) == ord('q')):
         break
 
