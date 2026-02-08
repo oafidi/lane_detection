@@ -13,10 +13,10 @@ def region_of_interst(image: np.ndarray) -> np.ndarray :
     new_img = image.copy()
 
     bottom_left  = [cols * 0.1, rows]
-    top_left     = [239, 253]
-    bottom_right = [cols * 0.9, rows ]
-    top_right    = [377, 252]
+    top_left     = [229, 293]
+    bottom_right = [cols * 0.79, rows ]
+    top_right    = [397, 293]
 
     points = np.array([[bottom_left, top_left, top_right, bottom_right]], dtype=np.int32)
-    cv2.fillPoly(mask, points, 1)
+    cv2.fillPoly(mask, points, 100)
     return mask * new_img, mask

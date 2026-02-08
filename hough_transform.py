@@ -1,6 +1,8 @@
 import numpy as np
 import cv2
 
+previous_lines = None
+
 def polar2cartesian(rho: float, theta: float) -> np.ndarray:
     return rho * np.array([np.sin(theta), np.cos(theta)])
 
@@ -104,20 +106,6 @@ def rotate_line(lines: np.ndarray, edges: np.ndarray,
                 angle_step: float = np.deg2rad(0.5),
                 rho_range: float = 50,
                 rho_step: float = 5) -> np.ndarray:
-    """
-    Optimise rho et theta de chaque ligne pour maximiser le support en contours.
-    
-    Args:
-        lines: Array (N, 2) avec [rho, theta] de filter_lines
-        edges: Image binaire des contours
-        angle_range: Plage de recherche autour de theta (radians)
-        angle_step: Pas de rotation pour la recherche (radians)
-        rho_range: Plage de recherche autour de rho (pixels)
-        rho_step: Pas de déplacement pour la recherche (pixels)
-        
-    Returns:
-        Array (N, 2) avec les lignes optimisées [rho, theta]
-    """
     if len(lines) == 0:
         return lines
     
@@ -152,6 +140,8 @@ def rotate_line(lines: np.ndarray, edges: np.ndarray,
     return np.array(optimized)
 
 def hough_transform(edges: np.ndarray, threshold: int):
+    global previous_lines
+    
     H, W = edges.shape
     thetas = np.arange(-np.pi / 2, np.pi / 2, 0.261)
     rhos = np.arange(-np.sqrt(H**2 + W**2), np.sqrt(H**2 + W**2), 9)
@@ -173,6 +163,17 @@ def hough_transform(edges: np.ndarray, threshold: int):
     rhos_indexes, thetas_indexes = np.where(accumulator > threshold)
     lines = filter_lines(edges, np.vstack([rhos[rhos_indexes], thetas[thetas_indexes]]).T)
     lines = rotate_line(lines, edges)
+
+    if len(lines) == 1 and previous_lines is not None and len(previous_lines) == 2:
+        current_rho = lines[0][0]
+        prev_rho_0 = previous_lines[0][0]
+        prev_rho_1 = previous_lines[1][0]
+        if abs(current_rho - prev_rho_0) < abs(current_rho - prev_rho_1):
+            lines = np.vstack([lines, previous_lines[1:2]])
+        else:
+            lines = np.vstack([lines, previous_lines[0:1]])
+    if len(lines) == 2:
+        previous_lines = lines.copy()
     return lines
 
 def draw_lines(img: np.ndarray, lines: np.ndarray, mask:np.ndarray, color: list[int], thickness: int):
