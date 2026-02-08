@@ -2,6 +2,8 @@
 
 A computer vision project that detects road lanes in video footage using classical image processing techniques. This project implements the complete pipeline from scratch using NumPy and OpenCV, without relying on high-level detection libraries.
 
+> **Quick Overview**: For a comprehensive understanding of the project with step-by-step explanations and visualizations, check out the **[lane_detection_pipeline.ipynb](lane_detection_pipeline.ipynb)** notebook.
+
 ## Features
 
 - Real-time lane detection on video streams
