@@ -72,8 +72,8 @@ road_lane_detection/
 
 1. Clone the repository:
 ```bash
-git clone <repository-url>
-cd road_lane_detection
+git clone https://github.com/oafidi/lane_detection.git
+cd lane_detection
 ```
 
 2. Install dependencies:
